@@ -11,12 +11,36 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      # Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Set up Node.js
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: ${{ vars.NODE_VERSION }}
+          node-version: ${{ vars.NODE_VERSION || '20.15.0' }}
+
+      # Verify package.json exists
+      - name: Check for package.json
+        run: |
+          if [ ! -f package.json ]; then
+            echo "Error: package.json not found"
+            exit 1
+          fi
+
+      # Install dependencies
       - name: Install dependencies
         run: npm ci
+
+      # Run build
       - name: Run build
         run: npm run build
+
+      #Upload build artifacts in case of failure
+      - name: Upload build artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: dist/
