@@ -8,10 +8,15 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start",
+    "start": "npm run start:migrations & nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/src/main",
+    "start:prod": "npm run start:migrations & node dist/src/main",
+    "create:migration": "knex migrate:make",
+    "start:migrations": "knex migrate:latest --env develop",
+    "revert:migrations": "knex migrate:rollback --env develop",
+    "create:seed": "knex seed:make",
+    "start:seed": "knex seed:run",
     "lint": "eslint \"{src,apps}/**/*.ts\" --fix"
   },
   "dependencies": {
