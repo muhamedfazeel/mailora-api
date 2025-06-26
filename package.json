@@ -22,7 +22,7 @@
   "dependencies": {
     "@fastify/static": "^8.2.0",
     "@nestjs/axios": "^4.0.0",
-    "@nestjs/common": "^11.1.2",
+    "@nestjs/common": "^11.1.3",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.1.3",
     "@nestjs/platform-fastify": "^11.1.3",
@@ -32,7 +32,7 @@
     "joi": "^17.13.3",
     "knex": "^3.1.0",
     "morgan": "^1.10.0",
-    "pg": "^8.16.0",
+    "pg": "^8.16.2",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "uuid": "^11.1.0"
