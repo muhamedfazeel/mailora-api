@@ -5,10 +5,11 @@ import {
   Injectable,
   NestInterceptor,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-export interface Response<T> {
+export interface ApiResponse<T> {
   data: T | null;
 }
 
@@ -21,12 +22,12 @@ interface ResponseStructure<T> {
 
 @Injectable()
 export class SuccessResponseInterceptor<T>
-  implements NestInterceptor<T, Response<T>>
+  implements NestInterceptor<T, ResponseStructure<T>>
 {
   intercept(
     context: ExecutionContext,
     next: CallHandler,
-  ): Observable<Response<T>> {
+  ): Observable<ResponseStructure<T>> {
     return next.handle().pipe(
       map((data: { statusCode?: number; message?: string; data?: T }) => {
         const responseStructure: ResponseStructure<T> = {
@@ -35,7 +36,7 @@ export class SuccessResponseInterceptor<T>
           message: data?.message || 'success',
           data: data?.data || null,
         };
-        context.switchToHttp().getResponse().status(HttpStatus.OK);
+        context.switchToHttp().getResponse<Response>().status(HttpStatus.OK);
         return responseStructure;
       }),
     );

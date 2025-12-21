@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { ConsoleLogger, Injectable, LogLevel, Scope } from '@nestjs/common';
 
 type CONSOLE_LOG_LEVELS = 'debug' | 'error' | 'info' | 'log' | 'warn';
@@ -5,8 +6,8 @@ type CONSOLE_LOG_LEVELS = 'debug' | 'error' | 'info' | 'log' | 'warn';
 @Injectable({ scope: Scope.TRANSIENT })
 export class CustomLogger extends ConsoleLogger {
   prettyPrintLog: boolean;
-  constructor(context?: any, options = {}) {
-    super(context, options);
+  constructor(context?: string, options = {}) {
+    super(context as string, options);
     this.init();
   }
 
@@ -16,7 +17,9 @@ export class CustomLogger extends ConsoleLogger {
     const envLogIndex = loggerLevel.findIndex((i) => i === LOGGER_LEVEL);
 
     this.setLogLevels(loggerLevel.slice(0, envLogIndex + 1));
-    this.prettyPrintLog = JSON.parse(process.env.PRETTY_PRINT_LOG || 'false');
+    this.prettyPrintLog = JSON.parse(
+      (process.env.PRETTY_PRINT_LOG as string) || ('false' as string),
+    ) as boolean;
   }
 
   log(message: any, ...args: any[]) {

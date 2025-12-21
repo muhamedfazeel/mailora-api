@@ -10,6 +10,7 @@ import { DATABASE_DEFAULT_PORT } from '_@common/constants';
 import { DiscordNotificationService } from 'src/discord/discord-notification.service';
 import { DiscordNotificationParams } from 'src/discord/interface/discord-notification.interface';
 import { DISCORD_MESSAGE_TYPE } from '_@common/types/discord-message.type';
+import { DISCORD_NOTIFICATION_TYPE } from '_@common/types/discord-notification.type';
 
 export const pgReadConnectionFactory: Provider = generateDBPool({
   isWriteReplica: false,
@@ -30,6 +31,11 @@ function generateDBPool({
   isWriteReplica,
   provider,
   factoryName,
+}: {
+  connectionName: string;
+  isWriteReplica: boolean;
+  provider: string;
+  factoryName: string;
 }): Provider {
   return {
     provide: provider,
@@ -72,11 +78,17 @@ function generateDBPool({
           }),
           catchError(async (err) => {
             const message = `${K.DATABASE_CONNECTION} [${connectionName}] ${err}`;
-
-            const discordMessage: DiscordNotificationParams = {
-              message,
-              level: DISCORD_MESSAGE_TYPE.ERROR,
-            };
+            logger.error(message);
+            if (config.discord.webhook) {
+              const discordMessage: DiscordNotificationParams = {
+                message,
+                level: DISCORD_MESSAGE_TYPE.ERROR,
+              };
+              await discord.sendNotification(
+                discordMessage,
+                DISCORD_NOTIFICATION_TYPE.ERROR,
+              );
+            }
             throw err;
           }),
           tap(() => {
