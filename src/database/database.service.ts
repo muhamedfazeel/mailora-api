@@ -1,5 +1,5 @@
 import { Inject, Injectable, Scope } from '@nestjs/common';
-import { Pool, PoolClient, QueryConfig } from 'pg';
+import { Pool, PoolClient, QueryConfig, QueryResultRow } from 'pg';
 import { CustomLogger } from '_@common/logger/custom-logger.service';
 import {
   POSTGRES_READ_CONNECTION,
@@ -16,52 +16,52 @@ export class DatabaseService {
     private readonly writePool: Pool,
   ) {}
 
-  async select<T = any>(
+  async select<T extends QueryResultRow = any>(
     query: string | QueryConfig,
     values?: any[],
   ): Promise<T[]> {
-    this.logger.debug(`SELECT QUERY: ${this.formatQuery(query, values)}`);
-    const result = await this.readPool.query<T>(query as any, values);
+    this.logger.debug(`SELECT QUERY: ${this.formatQuery(query)}`);
+    const result = await this.readPool.query<T>(query, values);
     return result.rows;
   }
 
-  async insert<T = any>(
+  async insert<T extends QueryResultRow = any>(
     query: string | QueryConfig,
     values?: any[],
   ): Promise<T[]> {
-    this.logger.debug(`INSERT QUERY: ${this.formatQuery(query, values)}`);
-    const result = await this.writePool.query<T>(query as any, values);
+    this.logger.debug(`INSERT QUERY: ${this.formatQuery(query)}`);
+    const result = await this.writePool.query<T>(query, values);
     return result.rows;
   }
 
-  async update<T = any>(
+  async update<T extends QueryResultRow = any>(
     query: string | QueryConfig,
     values?: any[],
   ): Promise<T[]> {
-    this.logger.debug(`UPDATE QUERY: ${this.formatQuery(query, values)}`);
-    const result = await this.writePool.query<T>(query as any, values);
+    this.logger.debug(`UPDATE QUERY: ${this.formatQuery(query)}`);
+    const result = await this.writePool.query<T>(query, values);
     return result.rows;
   }
 
-  async delete<T = any>(
+  async delete<T extends QueryResultRow = any>(
     query: string | QueryConfig,
     values?: any[],
   ): Promise<T[]> {
-    this.logger.debug(`DELETE QUERY: ${this.formatQuery(query, values)}`);
-    const result = await this.writePool.query<T>(query as any, values);
+    this.logger.debug(`DELETE QUERY: ${this.formatQuery(query)}`);
+    const result = await this.writePool.query<T>(query, values);
     return result.rows;
   }
 
-  async query<T = any>(
+  async query<T extends QueryResultRow = any>(
     query: string | QueryConfig,
     values?: any[],
     useWrite = false,
   ): Promise<T[]> {
     this.logger.debug(
-      `RAW QUERY: ${this.formatQuery(query, values)} | useWrite: ${useWrite}`,
+      `RAW QUERY: ${this.formatQuery(query)} | useWrite: ${useWrite}`,
     );
     const result = await (useWrite ? this.writePool : this.readPool).query<T>(
-      query as any,
+      query,
       values,
     );
     return result.rows;
@@ -78,9 +78,10 @@ export class DatabaseService {
       return result;
     } catch (err) {
       await client.query('ROLLBACK');
+      const error = err instanceof Error ? err : new Error(String(err));
       this.logger.error(
         'Transaction failed and rolled back.',
-        err.stack || err.message,
+        error.stack || error.message,
       );
       throw err;
     } finally {
@@ -88,7 +89,7 @@ export class DatabaseService {
     }
   }
 
-  private formatQuery(query: string | QueryConfig, values?: any[]): string {
+  private formatQuery(query: string | QueryConfig): string {
     return typeof query === 'string' ? query : query.text;
   }
 }
