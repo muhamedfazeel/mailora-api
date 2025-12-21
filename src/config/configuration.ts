@@ -28,7 +28,10 @@ export default registerAs('config', () => ({
   },
 
   discord: {
-    webhook: env.DISCORD_WEBHOOK,
+    webhook: {
+      success: env.SUCCESS_DISCORD_WEBHOOK,
+      error: env.ERROR_DISCORD_WEBHOOK,
+    },
     notifyRoles: env.DISCORD_NOTIFY_ROLES,
   },
 }));
