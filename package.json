@@ -2,7 +2,7 @@
   "name": "mailora-api",
   "version": "0.0.1",
   "description": "",
-  "author": "Muhamed Fazeel",
+  "author": "muhamedfazeel",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
@@ -46,6 +46,7 @@
     "@swc/core": "^1.13.5",
     "@types/express": "^5.0.5",
     "@types/node": "^24.7.0",
+    "@types/pg": "^8.16.0",
     "eslint": "^9.39.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",

@@ -16,7 +16,7 @@ export class UtilsService {
    * @param {any} obj Object to be checked
    * @returns {boolean} Whether object or not
    */
-  private isObject = (obj: any[] | any): boolean => {
+  private isObject = (obj: any): boolean => {
     return (
       obj === Object(obj) &&
       obj instanceof Date === false &&
@@ -30,21 +30,29 @@ export class UtilsService {
    * @param {any[] | any} obj Object or object array
    * @returns {any[] | any} Converted object or object array
    */
-  convertKeysToCamelCase = (obj: any[] | any): any[] | any => {
+  convertKeysToCamelCase<T>(obj: T): T {
     if (this.isObject(obj)) {
-      const newObj = {};
+      const newObj: Record<string, unknown> = {};
 
-      Object.keys(obj).forEach((key) => {
-        newObj[this.toCamel(key)] = this.convertKeysToCamelCase(obj[key]);
+      Object.keys(obj as object).forEach((key) => {
+        const camelKey = this.toCamel(key);
+        newObj[camelKey] = this.convertKeysToCamelCase(
+          (obj as Record<string, unknown>)[key],
+        );
       });
 
-      return newObj;
-    } else if (Array.isArray(obj)) {
-      return obj.map((i) => this.convertKeysToCamelCase(i));
+      return newObj as T;
+    }
+
+    if (Array.isArray(obj)) {
+      return obj.map((item) =>
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+        this.convertKeysToCamelCase(item),
+      ) as unknown as T;
     }
 
     return obj;
-  };
+  }
 
   /**
    * Extract property value

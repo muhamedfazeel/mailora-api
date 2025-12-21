@@ -9,10 +9,10 @@ import { CONTENT_TYPE } from 'src/common/constants';
     CustomLoggerModule,
     HttpModule.registerAsync({
       inject: ['REQUEST'],
-      useFactory: async (req: Request) => ({
+      useFactory: (req: Request) => ({
         transformRequest: [
-          (data, headers) => {
-            headers['unique_id'] = req?.headers?.['unique_id'];
+          (data: any, headers: Record<string, string>): string => {
+            headers['unique_id'] = req?.headers?.['unique_id'] as string;
 
             // Checking header has form-urlencoded content type
             const header = headers['Content-Type'];
@@ -28,7 +28,7 @@ import { CONTENT_TYPE } from 'src/common/constants';
               headers['Accept'] = CONTENT_TYPE.JSON;
             }
 
-            return isHeaderUrlEncoded ? data : JSON.stringify(data);
+            return (isHeaderUrlEncoded ? data : JSON.stringify(data)) as string;
           },
         ],
       }),
