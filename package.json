@@ -24,7 +24,7 @@
     "@nestjs/axios": "^4.0.1",
     "@nestjs/common": "^11.1.17",
     "@nestjs/config": "^4.0.3",
-    "@nestjs/core": "^11.1.14",
+    "@nestjs/core": "^11.1.18",
     "@nestjs/platform-fastify": "^11.1.18",
     "@nestjs/swagger": "^11.2.6",
     "class-transformer": "^0.5.1",
